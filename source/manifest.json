@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
-  "name": "Sample WebExtension",
-  "version": "0.0.0",
+  "name": "Code Rating Extension",
+  "version": "1.0.0",
 
   "icons": {
     "16": "assets/icons/favicon-16.png",
@@ -9,9 +9,9 @@
     "48": "assets/icons/favicon-48.png",
     "128": "assets/icons/favicon-128.png"
   },
-  "description": "Sample description",
-  "homepage_url": "https://github.com/abhijithvijayan/web-extension-starter",
-  "short_name": "Sample Name",
+  "description": "Extension for the Code Rating Bot",
+  "homepage_url": "https://github.com/CodeHub3/code-rating-bot-frontend",
+  "short_name": "Code Rating Extension",
 
   "permissions": [
     "activeTab",
@@ -60,14 +60,11 @@
     "scripts": [
       "js/background.bundle.js"
     ],
-    "__chrome|opera__persistent": false
+    "__chrome|opera__persistent": true
   },
 
   "content_scripts": [{
-    "matches": [
-      "http://*/*",
-      "https://*/*"
-    ],
+    "matches": ["https://github.com/*"],
     "js": [
       "js/contentScript.bundle.js"
     ]

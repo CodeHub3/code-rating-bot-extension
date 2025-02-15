@@ -1,29 +1,66 @@
-import * as React from 'react';
-
+import React, {useState} from 'react';
 import './styles.scss';
 
-const Options = () => {
+const Options = ({updateUserDetails}) => {
+  const [email, setEmail] = useState('');
+  const [experience, setExperience] = useState('');
+  const [additionalInfo, setAdditionalInfo] = useState('');
+  const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setMessage('');
+
+    try {
+      await updateUserDetails({email, experience, additionalInfo});
+      setMessage('Your details were successfully saved!');
+    } catch (error) {
+      setMessage('Error: Could not save your details. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <div>
-      <form>
-        <p>
-          <label htmlFor="username">Your Name</label>
-          <br />
+    <div className="user-form">
+      <h2>User Profile Settings</h2>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Email:
           <input
-            type="text"
-            id="username"
-            name="username"
-            spellCheck="false"
-            autoComplete="off"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
             required
           />
-        </p>
-        <p>
-          <label htmlFor="logging">
-            <input type="checkbox" name="logging" /> Show the features enabled
-            on each page in the console
-          </label>
-        </p>
+        </label>
+        <label>
+          Coding Experience (in years):
+          <input
+            type="number"
+            value={experience}
+            onChange={(e) => setExperience(e.target.value)}
+            placeholder="Enter years of experience"
+            min="0"
+            max="50"
+            required
+          />
+        </label>
+        <label>
+          Additional Information:
+          <textarea
+            value={additionalInfo}
+            onChange={(e) => setAdditionalInfo(e.target.value)}
+            placeholder="Add anything you'd like to share..."
+          />
+        </label>
+        <button className="submit-button" type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Saving...' : 'Save'}
+        </button>
+        {message && <p className="info-message">{message}</p>}
       </form>
     </div>
   );
