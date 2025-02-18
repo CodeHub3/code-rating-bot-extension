@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import './TaskRatingUI.scss';
 
-const TaskRatingUI = ({taskId, taskUrl, onRated}) => {
+const TaskRatingUI = ({taskId, onRated}) => {
   const [rating, setRating] = useState(null);
   const [error, setError] = useState(null);
   const [submitted, setSubmitted] = useState(false);
@@ -55,19 +55,32 @@ const TaskRatingUI = ({taskId, taskUrl, onRated}) => {
 
       setSubmitted(true);
       onRated();
+      setTimeout(() => {
+        window.location.reload(); // Refresh after submission
+      }, 2000);
     } catch (err) {
       setError(err.message);
     }
   };
 
   if (submitted) {
-    return <div className="success-message">Thank you for your rating!</div>;
+    return (
+      <div className="task-rating-ui">
+        <p className="success-message">
+          Your rating has been submitted successfully!
+        </p>
+      </div>
+    );
   }
 
   return (
-    <div className="rating-ui-container">
+    <div className="task-rating-ui">
       <h3>Rate This Task</h3>
-      <p>Please rate the difficulty of this task:</p>
+      <p>
+        Review all related commits for this task and assess the overall
+        difficulty of completing it. Consider factors such as complexity, scope,
+        and required effort before selecting your rating:
+      </p>
       <div className="rating-scale">
         {Array.from({length: 10}, (_, i) => i + 1).map((value) => (
           <button

@@ -1,5 +1,6 @@
 import 'emoji-log';
 import browser from 'webextension-polyfill';
+import {sendMessageToContentScript} from '../utils';
 
 let pendingRatings = [];
 
@@ -70,11 +71,15 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       console.log(
         `Injecting UI for ${matchedRating.type} with ID: ${matchedRating.id}`
       );
-      browser.tabs
-        .sendMessage(tabId, {
-          type: 'INJECT_RATING_UI',
-          data: matchedRating,
-        })
+      sendMessageToContentScript(tabId, {
+        type: 'INJECT_RATING_UI',
+        data: matchedRating,
+      })
+        // await browser.tabs
+        //   .sendMessage(tabId, {
+        //     type: 'INJECT_RATING_UI',
+        //     data: matchedRating,
+        //   })
         .catch((error) => {
           console.warn('Failed to send message to content script:', error);
         });

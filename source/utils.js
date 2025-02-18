@@ -52,24 +52,26 @@ export const fetchRepositories = async () => {
   }
 };
 
-export const fetchPendingRatings = async () => {
+export const sendMessageToContentScript = async (
+  tabId,
+  message,
+  retryCount = 5
+) => {
   try {
-    const username = await getUsername();
-    const response = await fetch(
-      `${BASE_URL}/users/${username}/pending_ratings`,
-      {
-        method: 'GET',
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch pending ratings.');
-    }
-
-    const data = await response.json();
-    return data;
+    await browser.tabs.sendMessage(tabId, message);
+    console.log('Message sent to content script:', message);
   } catch (error) {
-    console.error('Error fetching pending ratings:', error.message);
-    throw error;
+    if (retryCount > 0) {
+      console.warn('Content script not ready. Retrying...', error);
+      setTimeout(
+        () => sendMessageToContentScript(tabId, message, retryCount - 1),
+        1000
+      );
+    } else {
+      console.error(
+        'Failed to send message to content script after retries:',
+        error
+      );
+    }
   }
 };

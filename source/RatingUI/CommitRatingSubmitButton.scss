@@ -1,0 +1,68 @@
+@use '../styles/_variables' as *;
+
+.commit-rating-submit-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1000;
+}
+
+.commit-rating-submit-btn {
+  background-color: $green;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s ease-in-out;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background-color: darken($green, 5%);
+  }
+
+  &.disabled {
+    background-color: #d0d7de;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  &.loading {
+    background-color: #ffcc00;
+    color: #333;
+    cursor: progress;
+  }
+}
+
+.submit-feedback {
+  margin-top: 10px;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 500;
+  width: 250px;
+}
+
+.submit-feedback.success {
+  color: #155724;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+}
+
+.submit-feedback.error {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+}
+
+.submit-feedback.loading {
+  color: #856404;
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+}

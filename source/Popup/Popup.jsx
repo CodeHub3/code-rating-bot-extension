@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import browser from 'webextension-polyfill';
 import {fetchRepositories} from '../utils';
-
 import './styles.scss';
 
 const openWebPage = (url) => browser.tabs.create({url});
@@ -32,7 +31,7 @@ const Popup = () => {
   };
 
   const handleRefresh = async () => {
-    await fetchRepositories();
+    await loadRepositories();
     await browser.runtime.sendMessage({type: 'UPDATE_PENDING_RATINGS'});
   };
 
@@ -105,29 +104,31 @@ const Popup = () => {
           ))}
         </ul>
       )}
-      <div className="button-group">
-        <button
-          className="refresh-button"
-          type="button"
-          onClick={handleRefresh}
-        >
-          Refresh
-        </button>
-        <button
-          className="options-button"
-          onClick={() => openWebPage('options.html')}
-        >
-          Options
-        </button>
-        <button
-          className="info-button"
-          type="button"
-          onClick={() => setShowInfo(!showInfo)}
-        >
-          Info
-        </button>
-      </div>
-
+      {!loading && !error && (
+        <div className="button-group">
+          <button
+            className="refresh-button"
+            type="button"
+            onClick={handleRefresh}
+          >
+            Refresh
+          </button>
+          <button
+            className="options-button"
+            type="button"
+            onClick={() => openWebPage('options.html')}
+          >
+            Options
+          </button>
+          <button
+            className="info-button"
+            type="button"
+            onClick={() => setShowInfo(!showInfo)}
+          >
+            Info
+          </button>
+        </div>
+      )}
       {showInfo && (
         <div className="info-modal">
           <h3>Extension Information</h3>

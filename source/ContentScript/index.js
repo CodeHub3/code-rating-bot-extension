@@ -1,7 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import TaskRatingUI from './TaskRatingUI';
-import CommitRatingUI from './CommitRatingUI';
+import TaskRatingUI from '../RatingUI/TaskRatingUI';
+import '../RatingUI/TaskRatingUI.scss';
+import '../RatingUI/CommitFileRatingUI.scss';
+import CommitRatingSubmitButton from '../RatingUI/CommitRatingSubmitButton';
+import CommitFileRatingUI from '../RatingUI/CommitFileRatingUI';
 
 console.log('Content script loaded');
 
@@ -50,31 +53,89 @@ const injectTaskRatingUI = (taskId, url) => {
 
   // Render the React component into the container
   ReactDOM.render(
-    <TaskRatingUI
-      taskId={taskId}
-      taskUrl={url}
-      onRated={() => notifyTaskRated(url)}
-    />,
+    <TaskRatingUI taskId={taskId} onRated={() => notifyTaskRated(url)} />,
     uiContainer
   );
 };
 
-// Helper to inject Commit Rating UI
-const injectCommitRatingUI = (commitId) => {
-  const commitContainer = document.querySelector('.commit.full-commit');
+// Extract changed files from GitHub commit page
+const extractChangedFiles = () => {
+  const fileHeaders = document.querySelectorAll(
+    '.DiffFileHeader-module__diff-file-header--TjXyn'
+  );
+  return Array.from(fileHeaders)
+    .map((header) => {
+      const fileLink = header.querySelector('h3 a');
+      if (!fileLink) return null;
 
-  if (
-    !commitContainer ||
-    document.getElementById('commit-rating-ui-container')
-  ) {
-    return;
-  }
+      return {
+        filePath: fileLink.innerText.trim(), // Extract the file path
+        fileElement: header, // This is where we insert the rating UI
+      };
+    })
+    .filter(Boolean);
+};
 
-  const uiContainer = document.createElement('div');
-  uiContainer.id = 'commit-rating-ui-container';
-  commitContainer.appendChild(uiContainer);
+// Notify background script that a commit was rated
+const notifyCommitRated = async (url) => {
+  await browser.runtime.sendMessage({type: 'REMOVE_PENDING_RATING', url});
+  console.log(`Notified background script about rated commit: ${url}`);
+};
 
-  ReactDOM.render(<CommitRatingUI commitId={commitId} />, uiContainer);
+const injectCommitRatingSubmitButton = (commitSha, url, ratings) => {
+  if (document.getElementById('floating-submit-button')) return; // Prevent duplicates
+
+  const buttonContainer = document.createElement('div');
+  buttonContainer.id = 'floating-submit-button';
+  document.body.appendChild(buttonContainer);
+
+  ReactDOM.render(
+    <CommitRatingSubmitButton
+      commitSha={commitSha}
+      ratings={ratings}
+      onRated={() => notifyCommitRated(url)}
+    />,
+    buttonContainer
+  );
+};
+
+const injectCommitRatingUI = (commitSha, url) => {
+  console.log('Injecting commit rating UI...');
+
+  // Prevent duplicate UI injection
+  if (document.getElementById('commit-rating-ui-container')) return;
+
+  const changedFiles = extractChangedFiles();
+  if (!changedFiles.length) return;
+
+  // Initialize ratings state
+  const ratings = {};
+
+  changedFiles.forEach(({filePath, fileElement}) => {
+    if (!fileElement || fileElement.querySelector('.commit-file-rating-ui'))
+      return;
+
+    // Store ratings for validation
+    ratings[filePath] = null;
+
+    // Create a container for the rating UI
+    const uiContainer = document.createElement('div');
+    uiContainer.className = 'commit-file-rating-ui';
+    fileElement.appendChild(uiContainer);
+
+    ReactDOM.render(
+      <CommitFileRatingUI
+        filePath={filePath}
+        setRating={(file, rating) => {
+          ratings[file] = rating;
+        }}
+      />,
+      uiContainer
+    );
+  });
+
+  // Inject floating submit button separately
+  injectCommitRatingSubmitButton(commitSha, url, ratings);
 };
 
 // Listen for messages from the background script
