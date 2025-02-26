@@ -1,7 +1,7 @@
 {
-  "name": "code-rating-extension",
+  "name": "rate-code-extension",
   "version": "1.0.0",
-  "description": "Web Extension for the Code Rating Bot",
+  "description": "Web Extension for the Rate Code Bot",
   "private": true,
   "repository": "https://github.com/CodeHub3/code-rating-bot-frontend",
   "author": {

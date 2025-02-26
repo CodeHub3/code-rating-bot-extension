@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import './CommitFileRatingUI.scss';
 
 const CommitFileRatingUI = ({filePath, setRating}) => {
@@ -12,21 +12,40 @@ const CommitFileRatingUI = ({filePath, setRating}) => {
   return (
     <div className="commit-file-rating">
       <p>
-        Rate changes in <strong>{filePath}</strong>:
+        Rate the Code Complexity of the changes in <strong>{filePath}</strong>:
       </p>
-      <div className="rating-buttons">
-        {Array.from({length: 10}, (_, i) => (
+
+      <div className="rating-container">
+        <div className="rating-buttons">
+          <div className="likert-scale">
+            {Array.from({length: 7}, (_, i) => (
+              <button
+                key={i + 1}
+                className={`rating-btn ${
+                  selectedRating === i + 1 ? 'selected' : ''
+                }`}
+                type="button"
+                onClick={() => handleRatingSelection(i + 1)}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
           <button
-            key={i + 1}
-            className={`rating-btn ${
-              selectedRating === i + 1 ? 'selected' : ''
+            key={0}
+            className={`rating-btn no-rating ${
+              selectedRating === null ? 'selected' : ''
             }`}
             type="button"
-            onClick={() => handleRatingSelection(i + 1)}
+            onClick={() => handleRatingSelection(null)}
           >
-            {i + 1}
+            No Rating
           </button>
-        ))}
+        </div>
+        <div className="complexity-labels">
+          <span className="low">Low Complexity</span>
+          <span className="high">High Complexity</span>
+        </div>
       </div>
     </div>
   );

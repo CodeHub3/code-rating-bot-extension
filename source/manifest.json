@@ -1,17 +1,17 @@
 {
   "manifest_version": 2,
-  "name": "Code Rating Extension",
+  "name": "Rate Code",
   "version": "1.0.0",
 
   "icons": {
     "16": "assets/icons/favicon-16.png",
     "32": "assets/icons/favicon-32.png",
-    "48": "assets/icons/favicon-48.png",
-    "128": "assets/icons/favicon-128.png"
+    "192": "assets/icons/favicon-192.png",
+    "512": "assets/icons/favicon-512.png"
   },
-  "description": "Extension for the Code Rating Bot",
+  "description": "This extension streamlines the rating of commits and tasks streamlined by the Rate Code Bot.",
   "homepage_url": "https://github.com/CodeHub3/code-rating-bot-frontend",
-  "short_name": "Code Rating Extension",
+  "short_name": "Rate Code",
 
   "permissions": [
     "activeTab",
@@ -41,8 +41,8 @@
     "default_icon": {
       "16": "assets/icons/favicon-16.png",
       "32": "assets/icons/favicon-32.png",
-      "48": "assets/icons/favicon-48.png",
-      "128": "assets/icons/favicon-128.png"
+      "192": "assets/icons/favicon-192.png",
+      "512": "assets/icons/favicon-512.png"
     },
     "default_title": "tiny title",
     "__chrome|opera__chrome_style": false,
