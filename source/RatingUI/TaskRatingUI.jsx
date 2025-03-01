@@ -82,7 +82,7 @@ const TaskRatingUI = ({taskId, onRated}) => {
         and required effort before selecting your rating:
       </p>
       <div className="rating-scale">
-        {Array.from({length: 10}, (_, i) => i + 1).map((value) => (
+        {Array.from({length: 7}, (_, i) => i + 1).map((value) => (
           <button
             key={value}
             type="button"
