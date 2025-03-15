@@ -113,5 +113,3 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   }
   return true; // Indicate async response
 });
-
-fetchPendingRatings();

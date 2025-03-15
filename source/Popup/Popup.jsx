@@ -53,7 +53,6 @@ const Popup = () => {
       setError(null);
       const repos = await fetchRepositories();
       setRepositories(repos);
-      browser.runtime.sendMessage({type: 'UPDATE_PENDING_RATINGS'});
     } catch (err) {
       setError(err.message);
     } finally {
