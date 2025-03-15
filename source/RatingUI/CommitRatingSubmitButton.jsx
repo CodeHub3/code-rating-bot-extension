@@ -1,25 +1,20 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import './CommitRatingSubmitButton.scss';
-import {getUsername} from '../utils';
-
-const checkAllFilesRated = (ratings) => {
-  return Object.values(ratings).every((rating) => rating !== null);
-};
+import {BASE_URL, getUsername} from '../utils';
 
 const CommitRatingSubmitButton = ({commitSha, ratings, onRated}) => {
-  const [disabled, setDisabled] = useState(true);
   const [feedback, setFeedback] = useState({type: '', message: ''});
-
-  useEffect(() => {
-    setDisabled(!checkAllFilesRated(ratings)); // Enable/disable button based on ratings
-  }, [ratings]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
+    if (isSubmitting) return; // Prevent multiple clicks
+    setIsSubmitting(true);
+
     setFeedback({type: 'loading', message: 'Submitting ratings...'});
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/commits/${commitSha}/submit_rating/`,
+        `${BASE_URL}/commits/${commitSha}/submit_rating/`,
         {
           method: 'POST',
           headers: {
@@ -54,24 +49,23 @@ const CommitRatingSubmitButton = ({commitSha, ratings, onRated}) => {
       }, 2000);
     } catch (err) {
       console.error('Error submitting ratings:', err);
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="commit-rating-submit-container">
-      <button
-        // className={`commit-rating-submit-btn ${disabled ? 'disabled' : ''}`} TODO
-        className={`commit-rating-submit-btn`}
-        type="button"
-        onClick={handleSubmit}
-        // disabled={disabled}
-      >
-        Submit All Ratings
-      </button>
-
       {feedback.message && (
         <p className={`submit-feedback ${feedback.type}`}>{feedback.message}</p>
       )}
+      <button
+        className={`commit-rating-submit-btn ${isSubmitting ? 'disabled' : ''}`}
+        type="button"
+        onClick={handleSubmit}
+        disabled={isSubmitting}
+      >
+        Submit All Ratings
+      </button>
     </div>
   );
 };

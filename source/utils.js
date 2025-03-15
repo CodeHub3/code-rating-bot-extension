@@ -1,15 +1,15 @@
 import browser from 'webextension-polyfill';
 
-const BASE_URL = 'http://localhost:8000/api';
+export const BASE_URL = 'http://127.0.0.1:8000/api';
 
 const MESSAGES = {
   NO_USERNAME:
     'Could not fetch your GitHub username. Please ensure you have a logged-in GitHub tab open and refresh the page.',
   FETCH_REPOS_FAIL: 'Failed to fetch repositories. Please try again.',
   NO_REPOS_FOUND:
-    'No active tracked repositories found. You may not have made a commit to any tracked repository since it was registered, or you are not part of any tracked repository. Contact your instructor or admin if needed.',
+    'No active tracked repositories found. You may not have made a commit to any tracked repository, or you are not part of any tracked repository. Contact your instructor or admin if needed.',
   USER_NOT_REGISTERED:
-    'You are not registered in the system. You may not have made a commit to any tracked repository since it was registered, or you are not part of any tracked repository. Contact your instructor or admin if needed.',
+    'You are not registered in the system. You may not have made a commit to any tracked repository, or you are not part of any tracked repository. Contact your instructor or admin if needed.',
 };
 
 // Helper to get the GitHub username
@@ -26,7 +26,7 @@ export const fetchRepositories = async () => {
   try {
     const username = await getUsername();
     const response = await fetch(
-      `${BASE_URL}/users/${username}/repos?rating_active=true`,
+      `${BASE_URL}/users/${username}/repos/?rating_active=true`,
       {
         method: 'GET',
       }

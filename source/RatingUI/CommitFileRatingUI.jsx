@@ -12,7 +12,7 @@ const CommitFileRatingUI = ({filePath, setRating}) => {
   return (
     <div className="commit-file-rating">
       <p>
-        Rate the Code Complexity of the changes in <strong>{filePath}</strong>:
+        Rate the Code Complexity of the added lines in <strong>{filePath}</strong>:
       </p>
 
       <div className="rating-container">

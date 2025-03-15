@@ -9,7 +9,7 @@
     "192": "assets/icons/favicon-192.png",
     "512": "assets/icons/favicon-512.png"
   },
-  "description": "This extension streamlines the rating of commits and tasks streamlined by the Rate Code Bot.",
+  "description": "This extension streamlines the rating of commits and tasks by the Rate Code Bot.",
   "homepage_url": "https://github.com/CodeHub3/code-rating-bot-frontend",
   "short_name": "Rate Code",
 
@@ -22,9 +22,9 @@
 
   "content_security_policy": "script-src 'self'; object-src 'self'",
 
-  "__chrome|firefox__author": "abhijithvijayan",
+  "__chrome|firefox__author": "CodeHub3",
   "__opera__developer": {
-    "name": "abhijithvijayan"
+    "name": "CodeHub3"
   },
 
   "__firefox__applications": {
@@ -47,13 +47,6 @@
     "default_title": "tiny title",
     "__chrome|opera__chrome_style": false,
     "__firefox__browser_style": false
-  },
-
-  "__chrome|opera__options_page": "options.html",
-  "options_ui": {
-    "page": "options.html",
-    "open_in_tab": true,
-    "__chrome__chrome_style": false
   },
 
   "background": {

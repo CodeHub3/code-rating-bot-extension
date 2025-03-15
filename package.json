@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Web Extension for the Rate Code Bot",
   "private": true,
-  "repository": "https://github.com/CodeHub3/code-rating-bot-frontend",
+  "repository": "https://github.com/CodeHub3/code-rating-bot-extension",
   "author": {
     "name": "Nikolin Lotter",
     "email": "nikolin.lotter@uzh.ch"

@@ -1,6 +1,6 @@
 import 'emoji-log';
 import browser from 'webextension-polyfill';
-import {sendMessageToContentScript} from '../utils';
+import {sendMessageToContentScript, BASE_URL} from '../utils';
 
 let pendingRatings = [];
 
@@ -18,7 +18,7 @@ const fetchPendingRatings = async () => {
     }
 
     const response = await fetch(
-      `http://localhost:8000/api/users/${githubUsername}/pending_ratings`
+      `${BASE_URL}/users/${githubUsername}/pending_ratings/`
     );
 
     if (!response.ok) {
@@ -34,7 +34,7 @@ const fetchPendingRatings = async () => {
         url: commit.url,
       })),
       ...data.pending_tasks.map((task) => ({
-        id: task.number,
+        id: task.github_id,
         type: 'task',
         url: task.url,
       })),
@@ -60,12 +60,21 @@ const removeFromPendingRatings = (url) => {
 
 // Monitor tab updates and URL changes
 browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  if (
-    changeInfo.status === 'complete' &&
-    tab.url &&
-    tab.url.includes('github.com')
-  ) {
-    console.log(`GitHub tab detected: ${tab.url}`);
+  if (!tab.url) return;
+
+  // Only trigger when the page is fully loaded
+  if (changeInfo.status !== 'complete') return;
+
+  // Check if the URL is a GitHub commit or issue page
+  const isCommitPage =
+    tab.url.includes('github.com') && tab.url.includes('/commit/');
+  const isIssuePage =
+    tab.url.includes('github.com') && tab.url.includes('/issues/');
+
+  if (isCommitPage || isIssuePage) {
+    console.log(`GitHub issue/commit tab detected: ${tab.url}`);
+    console.log(`Fetching pending ratings for ${tab.url}`);
+    await fetchPendingRatings();
     const matchedRating = checkPendingRatings(tab.url);
     if (matchedRating) {
       console.log(
@@ -74,15 +83,9 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       sendMessageToContentScript(tabId, {
         type: 'INJECT_RATING_UI',
         data: matchedRating,
-      })
-        // await browser.tabs
-        //   .sendMessage(tabId, {
-        //     type: 'INJECT_RATING_UI',
-        //     data: matchedRating,
-        //   })
-        .catch((error) => {
-          console.warn('Failed to send message to content script:', error);
-        });
+      }).catch((error) => {
+        console.warn('Failed to send message to content script:', error);
+      });
     }
   }
 });
@@ -112,12 +115,3 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 });
 
 fetchPendingRatings();
-
-// Fetch ratings when GitHub pages are loaded or refreshed
-browser.tabs.onActivated.addListener(async (activeInfo) => {
-  const tab = await browser.tabs.get(activeInfo.tabId);
-  if (tab.url && tab.url.includes('github.com')) {
-    console.log('Tab activated on GitHub, refreshing pending ratings...');
-    await fetchPendingRatings();
-  }
-});

@@ -1,154 +1,251 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import browser from 'webextension-polyfill';
-import {fetchRepositories} from '../utils';
+import {fetchRepositories, getUsername, BASE_URL} from '../utils';
 import './styles.scss';
-
-const openWebPage = (url) => browser.tabs.create({url});
 
 const Popup = () => {
   const [repositories, setRepositories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showInfo, setShowInfo] = useState(false);
+  const [email, setEmail] = useState('');
+  const [emailStatus, setEmailStatus] = useState('');
+  const [newEmail, setNewEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [successMessage, setSuccessMessage] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [updatingEmail, setUpdatingEmail] = useState(false);
 
-  const loadRepositories = async () => {
+  // Fetch user's GitHub username & stored email
+  const fetchUserDetails = useCallback(async () => {
+    try {
+      const user = await getUsername();
+      if (!user) {
+        setError('Failed to retrieve username.');
+        return;
+      }
+
+      setUsername(user);
+
+      const response = await fetch(`${BASE_URL}/public/users/${user}/`);
+      if (!response.ok) throw new Error('Failed to fetch user details.');
+
+      const userData = await response.json();
+      if (userData.exists) {
+        if (userData.email) {
+          setEmail(userData.email);
+          setEmailStatus('verified');
+        } else {
+          setEmailStatus('missing');
+        }
+      } else {
+        setError('User does not exist in the system.');
+      }
+    } catch (err) {
+      console.error('Error fetching user details:', err);
+      setError('Error fetching user details.');
+    }
+  }, []);
+
+  // Fetch repositories
+  const loadRepositories = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const repos = await fetchRepositories(); // Use the utility to fetch repositories
+      const repos = await fetchRepositories();
       setRepositories(repos);
+      browser.runtime.sendMessage({type: 'UPDATE_PENDING_RATINGS'});
     } catch (err) {
-      setError(err.message); // Set the error message from the utility
+      setError(err.message);
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleRetry = async () => {
-    setRepositories([]);
-    setError(null);
-    loadRepositories();
-  };
-
-  const handleRefresh = async () => {
-    await loadRepositories();
-    await browser.runtime.sendMessage({type: 'UPDATE_PENDING_RATINGS'});
-  };
-
-  useEffect(() => {
-    loadRepositories();
-    browser.runtime.sendMessage({type: 'UPDATE_PENDING_RATINGS'});
   }, []);
+
+  // Fetch repositories & user details when the popup loads
+  useEffect(() => {
+    const fetchData = async () => {
+      await fetchUserDetails();
+      await loadRepositories();
+    };
+    fetchData();
+  }, [fetchUserDetails, loadRepositories]);
+
+  // Handle email submission
+  const handleEmailSubmit = useCallback(async () => {
+    if (!newEmail.includes('@') || !newEmail.includes('.')) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
+    setError(null);
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(
+        `${BASE_URL}/public/users/${username}/update-email/`,
+        {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({email: newEmail}),
+        }
+      );
+
+      if (!response.ok) throw new Error('Failed to update email.');
+
+      setEmail(newEmail);
+      setEmailStatus('verified');
+      setNewEmail('');
+      setSuccessMessage(true);
+
+      // Show success message for 2 seconds, then return to normal view
+      setTimeout(() => {
+        setSuccessMessage(false);
+        setIsSubmitting(false);
+        setUpdatingEmail(false);
+      }, 2000);
+    } catch (err) {
+      console.error('Error updating email:', err);
+      setError('Failed to update email.');
+      setIsSubmitting(false);
+    }
+  }, [newEmail, username]);
 
   return (
     <section id="popup">
       <h2>Tracked Repositories & Pending Ratings</h2>
 
-      {loading && <p className="loading">Loading...</p>}
       {error && (
         <div className="error-container">
           <p className="error-message">{error}</p>
-          <button className="retry-button" type="button" onClick={handleRetry}>
-            Try Again
-          </button>
+        </div>
+      )}
+      {successMessage && (
+        <div className="success-message">
+          <p>Email updated successfully!</p>
         </div>
       )}
 
-      {!loading && !error && repositories.length === 0 && (
-        <p className="no-repos">
-          No tracked repositories available at the moment.
-        </p>
-      )}
-
-      {!loading && !error && repositories.length > 0 && (
-        <ul className="repo-list">
-          {repositories.map((repo) => (
-            <li key={repo.name} className="repo-item">
-              <h3 className="repo-name">{repo.name}</h3>
-              {repo.pending_commits.length > 0 ||
-              repo.pending_tasks.length > 0 ? (
-                <>
-                  {repo.pending_commits.map((commit) => (
-                    <div key={commit.commit_hash} className="commit-task-item">
-                      <p>
-                        Pending rating for commit: &#39;{commit.message}&#39;
-                      </p>
-                      <a
-                        href={commit.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="commit-link"
-                      >
-                        View Commit
-                      </a>
-                    </div>
-                  ))}
-                  {repo.pending_tasks.map((task) => (
-                    <div key={task.github_id} className="commit-task-item">
-                      <p>Pending rating for task: &#39;{task.title}&#39;</p>
-                      <a
-                        href={task.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="task-link"
-                      >
-                        View Task
-                      </a>
-                    </div>
-                  ))}
-                </>
-              ) : (
-                <p className="no-pending-ratings">No pending ratings.</p>
+      <div className="content-container">
+        {/* Email Entry (Only shown if missing OR being updated) */}
+        {(emailStatus === 'missing' || updatingEmail) && !successMessage && (
+          <div className="email-container">
+            <p>
+              {updatingEmail
+                ? 'Update your email:'
+                : 'Please enter your email to continue:'}
+            </p>
+            <input
+              type="email"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+              placeholder={email || 'Enter your email'}
+              className="email-input"
+            />
+            <div className="email-buttons">
+              <button
+                onClick={handleEmailSubmit}
+                type="button"
+                className="email-submit-button"
+                disabled={
+                  !newEmail.trim() ||
+                  !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(newEmail) ||
+                  isSubmitting
+                }
+              >
+                Save Email
+              </button>
+              {updatingEmail && (
+                <button
+                  type="button"
+                  className="back-button"
+                  onClick={() => setUpdatingEmail(false)}
+                >
+                  Back
+                </button>
               )}
-            </li>
-          ))}
-        </ul>
-      )}
-      {!loading && !error && (
+            </div>
+          </div>
+        )}
+
+        {loading && <p className="loading">Loading repositories...</p>}
+
+        {!loading && !error && repositories.length === 0 && (
+          <p className="no-repos">
+            No tracked repositories available at the moment.
+          </p>
+        )}
+
+        {/* Repo List (Only shown when email is verified) */}
+        {!loading &&
+          emailStatus !== 'missing' &&
+          !error &&
+          !isSubmitting &&
+          !updatingEmail &&
+          repositories.length > 0 && (
+            <ul className="repo-list">
+              {repositories.map((repo) => (
+                <li key={repo.name} className="repo-item">
+                  <h3 className="repo-name">{repo.name}</h3>
+                  {repo.pending_commits.length > 0 ||
+                  repo.pending_tasks.length > 0 ? (
+                    <>
+                      {repo.pending_commits.map((commit) => (
+                        <div
+                          key={commit.commit_hash}
+                          className="commit-task-item"
+                        >
+                          <p>
+                            Pending rating for commit: &#34;
+                            {commit.message.split('\n')[0]}&#34;
+                          </p>
+                          <a
+                            href={commit.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="commit-link"
+                          >
+                            View Commit
+                          </a>
+                        </div>
+                      ))}
+                      {repo.pending_tasks.map((task) => (
+                        <div key={task.github_id} className="commit-task-item">
+                          <p>Pending rating for task: &#34;{task.title}&#34;</p>
+                          <a
+                            href={task.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="task-link"
+                          >
+                            View Task
+                          </a>
+                        </div>
+                      ))}
+                    </>
+                  ) : (
+                    <p className="no-pending-ratings">No pending ratings.</p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+      </div>
+
+      {!updatingEmail && !isSubmitting && emailStatus !== 'missing' && (
         <div className="button-group">
           <button
             className="refresh-button"
             type="button"
-            onClick={handleRefresh}
+            onClick={loadRepositories}
           >
             Refresh
           </button>
           <button
-            className="options-button"
+            className="email-update-button"
             type="button"
-            onClick={() => openWebPage('options.html')}
+            onClick={() => setUpdatingEmail(true)}
           >
-            Options
-          </button>
-          <button
-            className="info-button"
-            type="button"
-            onClick={() => setShowInfo(!showInfo)}
-          >
-            Info
-          </button>
-        </div>
-      )}
-      {showInfo && (
-        <div className="info-modal">
-          <h3>Extension Information</h3>
-          <p>
-            This extension helps you track pending commit and task ratings on
-            GitHub.
-          </p>
-          <ul>
-            <li>
-              Use the refresh button to update your tracked repositories and
-              pending ratings.
-            </li>
-            <li>Options allow you to set your preferences and details.</li>
-            <li>
-              Injected UIs help you rate tasks and commits directly on GitHub
-              pages.
-            </li>
-          </ul>
-          <button type="button" onClick={() => setShowInfo(false)}>
-            Close
+            Change Email
           </button>
         </div>
       )}

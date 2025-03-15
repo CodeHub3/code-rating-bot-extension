@@ -9,169 +9,279 @@ body {
 }
 
 #popup {
-  min-width: 360px;
-  max-width: 400px;
+  width: 450px;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   padding: 20px;
   background-color: $greyWhite;
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
 
-  h2 {
-    font-size: 16px;
-    color: $black;
-    text-align: center;
-    margin-bottom: 20px;
+h2 {
+  font-size: 16px;
+  color: $black;
+  text-align: center;
+  margin-bottom: 10px;
+  font-family: $primaryFont;
+  font-weight: $bold;
+}
+
+.loading {
+  text-align: center;
+  font-size: 16px;
+  color: $skyBlue;
+  font-family: $primaryFont;
+}
+
+.content-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  max-height: 380px;
+}
+
+.content-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content-container::-webkit-scrollbar-thumb {
+  background-color: #c0c0c0;
+  border-radius: 3px;
+}
+
+.error-container {
+  text-align: center;
+
+  .error-message {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 10px;
     font-family: $primaryFont;
-    font-weight: $bold;
+  }
+}
+
+.no-repos {
+  text-align: center;
+  font-size: 16px;
+  color: $black;
+  margin-top: 20px;
+  font-family: $primaryFont;
+}
+
+.repo-list {
+  list-style: none;
+  overflow-y: auto;
+  max-height: 370px;
+}
+
+.repo-item {
+  margin-bottom: 20px;
+  border: 1px solid $skyBlue;
+  border-radius: 8px;
+  padding: 15px;
+  background-color: white;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.repo-name {
+  font-size: 18px;
+  font-weight: $semibold;
+  margin-bottom: 10px;
+  color: $black;
+  font-family: $primaryFont;
+}
+
+.commit-task-item {
+  margin-bottom: 10px;
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: $black;
+    font-family: $primaryFont;
   }
 
-  .loading {
-    text-align: center;
-    font-size: 16px;
+  .commit-link,
+  .task-link {
+    font-size: 14px;
     color: $skyBlue;
+    text-decoration: none;
     font-family: $primaryFont;
-  }
 
-  .error-container {
-    text-align: center;
-
-    .error-message {
-      color: red;
-      font-size: 14px;
-      margin-bottom: 10px;
-      font-family: $primaryFont;
-    }
-
-    .retry-button {
-      background-color: lighten($skyBlue, 15%);
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      font-size: 14px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-family: $primaryFont;
-      font-weight: $semibold;
-
-      &:hover {
-        background-color: lighten($skyBlue, 10%);
-      }
+    &:hover {
+      text-decoration: underline;
     }
   }
+}
 
-  .no-repos {
-    text-align: center;
-    font-size: 16px;
-    color: $black;
-    margin-top: 20px;
-    font-family: $primaryFont;
+.no-pending-ratings {
+  font-size: 14px;
+  color: $black;
+  font-style: italic;
+  font-family: $primaryFont;
+}
+
+.button-group {
+  display: flex;
+  position: sticky;
+  justify-content: space-between;
+  padding-top: 10px;
+  background-color: $greyWhite;
+  border-top: 1px solid #d0d7de;
+}
+
+button {
+  flex: 1;
+  margin: 0 5px;
+  padding: 8px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: $primaryFont;
+  text-align: center;
+  transition: background-color 0.3s, transform 0.1s;
+
+  &:not(:disabled):hover {
+    transform: scale(1.02);
   }
 
-  .repo-list {
-    list-style: none;
-    padding: 0;
+  &:not(:disabled):active {
+    transform: scale(0.98);
+  }
 
-    .repo-item {
-      margin-bottom: 20px;
-      border: 1px solid $skyBlue;
-      border-radius: 8px;
-      padding: 15px;
-      background-color: white;
-      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.05);
+  &:disabled {
+    background-color: #c0c0c0;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+  }
+}
 
-      .repo-name {
-        font-size: 18px;
-        font-weight: $semibold;
-        margin-bottom: 10px;
-        color: $black;
-        font-family: $primaryFont;
-      }
+.refresh-button {
+  background-color: #0366d6;
+  color: white;
+}
 
-      .commit-task-item {
-        margin-bottom: 10px;
+.email-update-button {
+  background-color: #28a745;
+  color: white;
+}
 
-        p {
-          margin: 0;
-          font-size: 14px;
-          color: $black;
-          font-family: $primaryFont;
-        }
+.email-container {
+  background: #f6f8fa;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #d0d7de;
+  text-align: center;
+  margin-bottom: 10px;
+}
 
-        .commit-link,
-        .task-link {
-          font-size: 14px;
-          color: $skyBlue;
-          text-decoration: none;
-          font-family: $primaryFont;
+.email-container p {
+  font-size: 14px;
+  color: #24292e;
+  margin-bottom: 8px;
+}
 
-          &:hover {
-            text-decoration: underline;
-          }
-        }
-      }
+.email-input {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #d0d7de;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
 
-      .no-pending-ratings {
-        font-size: 14px;
-        color: $black;
-        font-style: italic;
-        font-family: $primaryFont;
-      }
+.email-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+
+  .back-button {
+    background-color: #6c757d;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    width: 48%;
+
+    &:hover {
+      background-color: #5a6268;
+    }
+
+    &:active {
+      transform: scale(0.98);
     }
   }
 
-  .button-group {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
+  .email-submit-button {
+    background-color: #0366d6;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    width: 48%;
 
-    button {
-      flex: 1;
-      margin: 0 5px;
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-      font-family: $primaryFont;
-      text-align: center;
-      transition: background-color 0.3s, transform 0.1s;
+    &:hover {
+      background-color: #0255b0;
+    }
 
-      &:hover {
-        transform: scale(1.03); /* Slight hover effect */
-      }
-
-      &:active {
-        transform: scale(0.97); /* Pressed effect */
-      }
-
-      &.refresh-button {
-        background-color: #0366d6;
-        color: white;
-
-        &:hover {
-          background-color: #0353b6;
-        }
-      }
-
-      &.options-button {
-        background-color: #28a745;
-        color: white;
-
-        &:hover {
-          background-color: #218838;
-        }
-      }
-
-      &.info-button {
-        background-color: #f6f8fa;
-        color: #24292f;
-        border: 1px solid #d0d7de;
-
-        &:hover {
-          background-color: #e1e4e8;
-        }
-      }
+    &:disabled {
+      background-color: #c0c0c0;
+      cursor: not-allowed;
+      opacity: 0.6;
     }
   }
+}
+
+.success-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 12px 18px;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 14px;
+  min-width: 250px;
+  animation: fadeIn 0.3s ease-in-out, fadeOut 0.3s ease-in-out 1.7s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -55%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -45%);
+  }
+}
+
+* {
+  box-sizing: border-box;
 }

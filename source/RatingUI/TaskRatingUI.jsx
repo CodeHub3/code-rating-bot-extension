@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import './TaskRatingUI.scss';
+import {BASE_URL} from '../utils';
 
 const TaskRatingUI = ({taskId, onRated}) => {
   const [rating, setRating] = useState(null);
@@ -33,7 +34,7 @@ const TaskRatingUI = ({taskId, onRated}) => {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/tasks/${taskId}/submit_rating/`,
+        `${BASE_URL}/tasks/${taskId}/submit_rating/`,
         {
           method: 'POST',
           headers: {

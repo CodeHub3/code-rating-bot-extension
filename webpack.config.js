@@ -61,7 +61,6 @@ module.exports = {
     background: path.join(sourcePath, 'Background', 'index.js'),
     contentScript: path.join(sourcePath, 'ContentScript', 'index.js'),
     popup: path.join(sourcePath, 'Popup', 'index.jsx'),
-    options: path.join(sourcePath, 'Options', 'index.jsx'),
   },
 
   output: {

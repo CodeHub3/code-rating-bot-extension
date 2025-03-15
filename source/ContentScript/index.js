@@ -60,6 +60,8 @@ const injectTaskRatingUI = (taskId, url) => {
 
 // Extract changed files from GitHub commit page
 const extractChangedFiles = () => {
+  console.log('Extracting changed files...');
+
   const fileHeaders = document.querySelectorAll(
     '.DiffFileHeader-module__diff-file-header--TjXyn'
   );
@@ -136,6 +138,35 @@ const injectCommitRatingUI = (commitSha, url) => {
 
   // Inject floating submit button separately
   injectCommitRatingSubmitButton(commitSha, url, ratings);
+  console.log(`Injection complete for ${changedFiles.length} file(s)`);
+};
+
+const injectCommitRatingInstruction = () => {
+  console.log('Injecting rating instruction...');
+
+  const diffContainer = document.querySelector('#diff-content-parent');
+  if (!diffContainer) {
+    console.warn(
+      'Could not find diff container. Instruction message not injected.'
+    );
+    return;
+  }
+
+  // Prevent duplicate message injection
+  if (document.getElementById('rating-instruction')) return;
+
+  // Create message element
+  const instructionElement = document.createElement('div');
+  instructionElement.id = 'rating-instruction';
+  instructionElement.className = 'rating-instruction-box';
+  instructionElement.innerText =
+    'Rate the code complexity of the added lines for each file based on how difficult they are to read, ' +
+    'understand, and maintain.\n' +
+    'Consider factors such as readability, logic flow, modularity, naming conventions, error handling, and maintainability.' +
+    '\nFor files which do not contain any code (e.g comments) you can leave the rating at "No Rating".';
+
+  // Insert before all file diffs
+  diffContainer.prepend(instructionElement);
 };
 
 // Listen for messages from the background script
@@ -146,7 +177,10 @@ browser.runtime.onMessage.addListener((message) => {
     if (type === 'task') {
       injectTaskRatingUI(id, url);
     } else if (type === 'commit') {
-      injectCommitRatingUI(id, url);
+      injectCommitRatingInstruction();
+      setTimeout(() => {
+        injectCommitRatingUI(id, url);
+      }, 500);
     }
   }
 });
