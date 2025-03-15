@@ -92,10 +92,7 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
 // Listen for messages from popup or content script
 browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-  if (message.type === 'UPDATE_PENDING_RATINGS') {
-    await fetchPendingRatings();
-    sendResponse({success: true});
-  } else if (message.type === 'REMOVE_PENDING_RATING') {
+  if (message.type === 'REMOVE_PENDING_RATING') {
     removeFromPendingRatings(message.url);
     sendResponse({success: true});
   } else if (message.type === 'SET_USERNAME' && message.username) {

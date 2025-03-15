@@ -1,4 +1,5 @@
 import React from 'react';
+import browser from 'webextension-polyfill';
 import ReactDOM from 'react-dom';
 import TaskRatingUI from '../RatingUI/TaskRatingUI';
 import '../RatingUI/TaskRatingUI.scss';

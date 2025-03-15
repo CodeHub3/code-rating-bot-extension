@@ -1,5 +1,4 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import browser from 'webextension-polyfill';
 import {fetchRepositories, getUsername, BASE_URL} from '../utils';
 import './styles.scss';
 
@@ -157,7 +156,11 @@ const Popup = () => {
                 <button
                   type="button"
                   className="back-button"
-                  onClick={() => setUpdatingEmail(false)}
+                  onClick={() => {
+                    setUpdatingEmail(false);
+                    setError(null);
+                    loadRepositories();
+                  }}
                 >
                   Back
                 </button>
@@ -168,11 +171,15 @@ const Popup = () => {
 
         {loading && <p className="loading">Loading repositories...</p>}
 
-        {!loading && !error && repositories.length === 0 && (
-          <p className="no-repos">
-            No tracked repositories available at the moment.
-          </p>
-        )}
+        {!loading &&
+          !error &&
+          !updatingEmail &&
+          emailStatus !== 'missing' &&
+          repositories.length === 0 && (
+            <p className="no-repos">
+              No tracked repositories available at the moment.
+            </p>
+          )}
 
         {/* Repo List (Only shown when email is verified) */}
         {!loading &&
@@ -242,7 +249,10 @@ const Popup = () => {
           <button
             className="email-update-button"
             type="button"
-            onClick={() => setUpdatingEmail(true)}
+            onClick={() => {
+              setUpdatingEmail(true);
+              setError(null);
+            }}
           >
             Change Email
           </button>
