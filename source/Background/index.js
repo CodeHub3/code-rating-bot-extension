@@ -92,10 +92,7 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
 // Listen for messages from popup or content script
 browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-  if (message.type === 'UPDATE_PENDING_RATINGS') {
-    await fetchPendingRatings();
-    sendResponse({success: true});
-  } else if (message.type === 'REMOVE_PENDING_RATING') {
+  if (message.type === 'REMOVE_PENDING_RATING') {
     removeFromPendingRatings(message.url);
     sendResponse({success: true});
   } else if (message.type === 'SET_USERNAME' && message.username) {
@@ -111,7 +108,50 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       sendResponse({success: false, error: 'No username found.'});
     }
   }
+  // SUBMIT RATINGS
+  try {
+    if (message.type === 'SUBMIT_TASK_RATING') {
+      const response = await fetch(
+        `${BASE_URL}/tasks/${message.taskId}/submit_rating/`,
+        {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            github_username: message.githubUsername,
+            rating: message.rating,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to submit task rating: ${response.status}`);
+      }
+
+      sendResponse({success: true});
+    } else if (message.type === 'SUBMIT_COMMIT_RATING') {
+      const response = await fetch(
+        `${BASE_URL}/commits/${message.commitSha}/submit_rating/`,
+        {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            github_username: message.githubUsername,
+            file_ratings: message.fileRatings,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to submit commit rating: ${response.status}`);
+      }
+
+      sendResponse({success: true});
+    } else {
+      sendResponse({success: false, error: 'Unknown request type.'});
+    }
+  } catch (error) {
+    sendResponse({success: false, error: error.message});
+  }
+
   return true; // Indicate async response
 });
-
-fetchPendingRatings();

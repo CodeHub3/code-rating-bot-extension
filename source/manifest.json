@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Rate Code",
   "version": "1.0.0",
 
@@ -10,24 +10,30 @@
     "512": "assets/icons/favicon-512.png"
   },
   "description": "This extension streamlines the rating of commits and tasks by the Rate Code Bot.",
-  "homepage_url": "https://github.com/CodeHub3/code-rating-bot-frontend",
+  "homepage_url": "https://github.com/CodeHub3/code-rating-bot-extension",
   "short_name": "Rate Code",
 
   "permissions": [
-    "activeTab",
     "storage",
+    "activeTab",
+    "tabs"
+  ],
+
+  "host_permissions": [
+    "https://*.github.com/*",
     "http://*/*",
     "https://*/*"
   ],
 
-  "content_security_policy": "script-src 'self'; object-src 'self'",
-
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
   "__chrome|firefox__author": "CodeHub3",
   "__opera__developer": {
     "name": "CodeHub3"
   },
 
-  "__firefox__applications": {
+  "browser_specific_settings": {
     "gecko": {
       "id": "{754FB1AD-CC3B-4856-B6A0-7786F8CA9D17}"
     }
@@ -36,7 +42,7 @@
   "__chrome__minimum_chrome_version": "49",
   "__opera__minimum_opera_version": "36",
 
-  "browser_action": {
+  "action": {
     "default_popup": "popup.html",
     "default_icon": {
       "16": "assets/icons/favicon-16.png",
@@ -44,16 +50,14 @@
       "192": "assets/icons/favicon-192.png",
       "512": "assets/icons/favicon-512.png"
     },
-    "default_title": "tiny title",
+    "default_title": "Rate Code",
     "__chrome|opera__chrome_style": false,
     "__firefox__browser_style": false
   },
 
   "background": {
-    "scripts": [
-      "js/background.bundle.js"
-    ],
-    "__chrome|opera__persistent": true
+    "__chrome__service_worker": "js/background.bundle.js",
+    "__firefox__scripts": ["js/background.bundle.js"]
   },
 
   "content_scripts": [{

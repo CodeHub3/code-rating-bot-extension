@@ -1,25 +1,15 @@
 import React, {useState, useEffect} from 'react';
+import browser from 'webextension-polyfill';
 import './TaskRatingUI.scss';
-import {BASE_URL} from '../utils';
+import {getUsername} from '../utils';
 
 const TaskRatingUI = ({taskId, onRated}) => {
   const [rating, setRating] = useState(null);
   const [error, setError] = useState(null);
   const [submitted, setSubmitted] = useState(false);
-  const [githubUsername, setGithubUsername] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch GitHub username from local storage
-  useEffect(() => {
-    const fetchUsername = async () => {
-      const result = await browser.storage.local.get('githubUsername');
-      if (result.githubUsername) {
-        setGithubUsername(result.githubUsername);
-      } else {
-        setError("GitHub username not found. Please ensure you're logged in.");
-      }
-    };
-    fetchUsername();
-  }, []);
+  useEffect(() => {}, []);
 
   const handleRating = (value) => {
     setRating(value);
@@ -31,36 +21,29 @@ const TaskRatingUI = ({taskId, onRated}) => {
       setError('Please select a rating before submitting.');
       return;
     }
+    const githubUsername = await getUsername();
+    setIsSubmitting(true);
+    setError(null);
 
     try {
-      const response = await fetch(
-        `${BASE_URL}/tasks/${taskId}/submit_rating/`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            github_username: githubUsername,
-            rating: parseInt(rating, 10),
-          }),
-        }
-      );
+      const success = await browser.runtime.sendMessage({
+        type: 'SUBMIT_TASK_RATING',
+        taskId,
+        githubUsername,
+        rating: parseInt(rating, 10),
+      });
 
-      if (!response.ok) {
-        const responseData = await response.json();
-        throw new Error(
-          responseData.error || 'Failed to submit rating. Please try again.'
-        );
+      if (success) {
+        setSubmitted(true);
+        onRated();
+        setTimeout(() => window.location.reload(), 2000);
+      } else {
+        throw new Error('Failed to submit rating.');
       }
-
-      setSubmitted(true);
-      onRated();
-      setTimeout(() => {
-        window.location.reload(); // Refresh after submission
-      }, 2000);
     } catch (err) {
       setError(err.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -89,6 +72,7 @@ const TaskRatingUI = ({taskId, onRated}) => {
             type="button"
             className={`rating-button ${rating === value ? 'selected' : ''}`}
             onClick={() => handleRating(value)}
+            disabled={isSubmitting}
           >
             {value}
           </button>
@@ -101,9 +85,9 @@ const TaskRatingUI = ({taskId, onRated}) => {
         className="submit-button"
         type="button"
         onClick={submitRating}
-        disabled={!rating}
+        disabled={!rating || isSubmitting}
       >
-        Submit Rating
+        {isSubmitting ? 'Submitting...' : 'Submit Rating'}
       </button>
     </div>
   );
