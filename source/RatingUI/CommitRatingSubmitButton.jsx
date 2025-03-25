@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
+import browser from 'webextension-polyfill';
 import './CommitRatingSubmitButton.scss';
-import {BASE_URL, getUsername} from '../utils';
+import {getUsername} from '../utils';
 
 const CommitRatingSubmitButton = ({commitSha, ratings, onRated}) => {
   const [feedback, setFeedback] = useState({type: '', message: ''});
@@ -13,42 +14,27 @@ const CommitRatingSubmitButton = ({commitSha, ratings, onRated}) => {
     setFeedback({type: 'loading', message: 'Submitting ratings...'});
 
     try {
-      const response = await fetch(
-        `${BASE_URL}/commits/${commitSha}/submit_rating/`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            github_username: await getUsername(),
-            file_ratings: Object.entries(ratings).map(([filePath, rating]) => ({
-              file_path: filePath,
-              rating,
-            })),
-          }),
-        }
-      );
-
-      if (!response.ok) {
+      const success = await browser.runtime.sendMessage({
+        type: 'SUBMIT_COMMIT_RATING',
+        commitSha,
+        fileRatings: Object.entries(ratings).map(([filePath, rating]) => ({
+          file_path: filePath,
+          rating,
+        })),
+        githubUsername: await getUsername(),
+      });
+      if (success) {
         setFeedback({
-          type: 'error',
-          message: `Error submitting ratings. Please try again. ${response.status}`,
+          type: 'success',
+          message: 'Ratings submitted successfully!',
         });
+        onRated();
+        setTimeout(() => window.location.reload(), 2000);
+      } else {
         throw new Error('Failed to submit ratings.');
       }
-
-      setFeedback({
-        type: 'success',
-        message: 'Ratings submitted successfully!',
-      });
-
-      onRated();
-      setTimeout(() => {
-        window.location.reload(); // Refresh after submission
-      }, 2000);
     } catch (err) {
-      console.error('Error submitting ratings:', err);
+      setFeedback({type: 'error', message: err.message});
       setIsSubmitting(false);
     }
   };
