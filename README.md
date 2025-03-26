@@ -1,71 +1,20 @@
-<h1 align="center">🚀 web-extension-starter</h1>
-<p align="center">Web Extension starter to build "Write Once Run on Any Browser" extension</p>
-<div align="center">
-  <a href="https://travis-ci.com/abhijithvijayan/web-extension-starter">
-    <img src="https://travis-ci.com/abhijithvijayan/web-extension-starter.svg?branch=react-javascript" alt="Travis Build" />
-  </a>
-  </a>
-  <a href="https://david-dm.org/abhijithvijayan/web-extension-starter">
-    <img src="https://img.shields.io/david/abhijithvijayan/web-extension-starter.svg?colorB=orange" alt="DEPENDENCIES" />
-  </a>
-  <a href="https://github.com/abhijithvijayan/web-extension-starter/blob/master/LICENSE">
-    <img src="https://img.shields.io/github/license/abhijithvijayan/web-extension-starter.svg" alt="LICENSE" />
-  </a>
-  <a href="https://twitter.com/intent/tweet?text=Check%20out%20web-extension-starter%21%20by%20%40_abhijithv%0A%0AWeb%20Extension%20starter%20to%20build%20%22Write%20Once%20Run%20on%20Any%20Browser%22%20extension.%20https%3A%2F%2Fgithub.com%2Fabhijithvijayan%2Fweb-extension-starter%0A%0A%23javascript%20%23react%20%23typescript%20%23sass%20%23webextension%20%23chrome%20%23firefox%20%23opera">
-     <img src="https://img.shields.io/twitter/url/http/shields.io.svg?style=social" alt="TWEET" />
-  </a>
-</div>
-<h3 align="center">🙋‍♂️ Made by <a href="https://twitter.com/_abhijithv">@abhijithvijayan</a></h3>
-<p align="center">
-  Donate:
-  <a href="https://www.paypal.me/iamabhijithvijayan" target='_blank'><i><b>PayPal</b></i></a>,
-  <a href="https://www.patreon.com/abhijithvijayan" target='_blank'><i><b>Patreon</b></i></a>
-</p>
-<p align="center">
-  <a href='https://www.buymeacoffee.com/abhijithvijayan' target='_blank'>
-    <img height='36' style='border:0px;height:36px;' src='https://bmc-cdn.nyc3.digitaloceanspaces.com/BMC-button-images/custom_images/orange_img.png' border='0' alt='Buy Me a Coffee' />
-  </a>
-</p>
-<hr />
+# Rate Code – GitHub Rating Assistant
 
-❤️ it? ⭐️ it on [GitHub](https://github.com/abhijithvijayan/web-extension-starter) or [Tweet](https://twitter.com/intent/tweet?text=Check%20out%20web-extension-starter%21%20by%20%40_abhijithv%0A%0AWeb%20Extension%20starter%20to%20build%20%22Write%20Once%20Run%20on%20Any%20Browser%22%20extension.%20https%3A%2F%2Fgithub.com%2Fabhijithvijayan%2Fweb-extension-starter%0A%0A%23javascript%20%23react%20%23typescript%20%23sass%20%23webextension%20%23chrome%20%23firefox%20%23opera) about it.
+**Rate Code** is a browser extension that enhances GitHub by allowing users to rate commits and tasks directly within the platform. It is designed for educational and research purposes, making it easier to collect structured feedback on code changes and development tasks.
 
-😨 **React + JavaScript** = [This](https://github.com/abhijithvijayan/web-extension-starter/tree/react-javascript) branch
-
-🧙‍♂️ **React + TypeScript** = Checkout [react-typescript](https://github.com/abhijithvijayan/web-extension-starter/tree/react-typescript) branch
-
-👶🏼 **HTML + JavaScript** = Checkout [master](https://github.com/abhijithvijayan/web-extension-starter/tree/master) branch
+---
 
 ## Features
 
-- Cross Browser Support (Web-Extensions API)
-- Browser Tailored Manifest generation
-- Automatic build on code changes
-- Auto packs browser specific build files
-- SASS styling
-- ES6 modules support
-- React UI Library by default
-- Smart reload
+- Adds a rating interface to GitHub commit and issue pages
+- Supports rating individual files in a commit and full tasks
+- Detects pending ratings automatically and injects UI
+- Submits ratings to a secure backend for analysis
+- Works in both Chrome and Firefox (Manifest V3)
 
-## Browser Support
+---
 
-| [![Chrome](https://raw.github.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png)](/) | [![Firefox](https://raw.github.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png)](/) | [![Opera](https://raw.github.com/alrra/browser-logos/master/src/opera/opera_48x48.png)](/) | [![Edge](https://raw.github.com/alrra/browser-logos/master/src/edge/edge_48x48.png)](/) | [![Yandex](https://raw.github.com/alrra/browser-logos/master/src/yandex/yandex_48x48.png)](/) | [![Brave](https://raw.github.com/alrra/browser-logos/master/src/brave/brave_48x48.png)](/) | [![vivaldi](https://raw.github.com/alrra/browser-logos/master/src/vivaldi/vivaldi_48x48.png)](/) |
-| --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| 49 & later ✔                                                                                  | 52 & later ✔                                                                                     | 36 & later ✔                                                                               | 79 & later ✔                                                                            | Latest ✔                                                                                      | Latest ✔                                                                                   | Latest ✔                                                                                         |
-
-## Demo
-
-- [abhijithvijayan/kutt-extension](https://github.com/abhijithvijayan/kutt-extension)
-
-## Use this template
-
-Create a new directory and run
-
-```
-curl -fsSL https://github.com/abhijithvijayan/web-extension-starter/archive/react-javascript.tar.gz | tar -xz --strip-components=1
-```
-
-## 🚀 Quick Start
+## Quick Start
 
 Ensure you have
 
@@ -120,57 +69,10 @@ Then run the following:
 
 Note: By default the `manifest.json` is set with version `0.0.0`. The webpack loader will update the version in the build with that of the `package.json` version. In order to release a new version, update version in `package.json` and run script.
 
-If you don't want to use `package.json` version, you can disable the option [here](https://github.com/abhijithvijayan/web-extension-starter/blob/e10158c4a49948dea9fdca06592876d9ca04e028/webpack.config.js#L79).
+### Data Usage
 
-### Generating browser specific manifest.json
-
-Update `source/manifest.json` file with browser vendor prefixed manifest keys
-
-```js
-{
-  "__chrome__name": "SuperChrome",
-  "__firefox__name": "SuperFox",
-  "__edge__name": "SuperEdge",
-  "__opera__name": "SuperOpera"
-}
-```
-
-if the vendor is `chrome` this compiles to:
-
-```js
-{
-  "name": "SuperChrome",
-}
-```
-
----
-
-Add keys to multiple vendors by separating them with | in the prefix
-
-```
-{
-  __chrome|opera__name: "SuperBlink"
-}
-```
-
-if the vendor is `chrome` or `opera`, this compiles to:
-
-```
-{
-  "name": "SuperBlink"
-}
-```
-
-See the original [README](https://github.com/abhijithvijayan/wext-manifest-loader) of `wext-manifest-loader` package for more details
-
-## Bugs
-
-Please file an issue [here](https://github.com/abhijithvijayan/web-extension-starter/issues/new) for bugs, missing documentation, or unexpected behavior.
-
-### Linting Config
-
-- Shared Eslint & Prettier Configuration - [`@abhijithvijayan/eslint-config`](https://www.npmjs.com/package/@abhijithvijayan/eslint-config)
+The extension stores the GitHub username and user-provided email locally using the browser’s extension storage. No data is transmitted to third parties. Ratings are sent securely to the configured backend for research and analysis purposes only.
 
 ## License
 
-MIT © [Abhijith Vijayan](https://abhijithvijayan.in)
+MIT © [Nikolin Lotter]
