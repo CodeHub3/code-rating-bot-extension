@@ -21,8 +21,7 @@
 
   "host_permissions": [
     "https://*.github.com/*",
-    "http://*/*",
-    "https://*/*"
+    "https://codax.ifi.uzh.ch/*"
   ],
 
   "content_security_policy": {
@@ -35,11 +34,11 @@
 
   "browser_specific_settings": {
     "gecko": {
-      "id": "{754FB1AD-CC3B-4856-B6A0-7786F8CA9D17}"
+      "id": "{50e52a4b-b2e1-4d23-ad0d-c73842575dbb}"
     }
   },
 
-  "__chrome__minimum_chrome_version": "49",
+  "__chrome__minimum_chrome_version": "88",
   "__opera__minimum_opera_version": "36",
 
   "action": {

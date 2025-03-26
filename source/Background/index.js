@@ -39,8 +39,6 @@ const fetchPendingRatings = async () => {
         url: task.url,
       })),
     ];
-
-    console.log('Updated pending ratings:', pendingRatings);
   } catch (error) {
     console.error('Error fetching pending ratings:', error.message);
   }
@@ -128,7 +126,9 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       }
 
       sendResponse({success: true});
-    } else if (message.type === 'SUBMIT_COMMIT_RATING') {
+      return true;
+    }
+    if (message.type === 'SUBMIT_COMMIT_RATING') {
       const response = await fetch(
         `${BASE_URL}/commits/${message.commitSha}/submit_rating/`,
         {
@@ -140,18 +140,17 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
           }),
         }
       );
-
       if (!response.ok) {
         throw new Error(`Failed to submit commit rating: ${response.status}`);
       }
 
       sendResponse({success: true});
-    } else {
-      sendResponse({success: false, error: 'Unknown request type.'});
+      return true;
     }
+    sendResponse({success: false, error: 'Unknown request type.'});
+    return false;
   } catch (error) {
     sendResponse({success: false, error: error.message});
+    return false;
   }
-
-  return true; // Indicate async response
 });

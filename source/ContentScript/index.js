@@ -161,7 +161,7 @@ const injectCommitRatingInstruction = () => {
   instructionElement.id = 'rating-instruction';
   instructionElement.className = 'rating-instruction-box';
   instructionElement.innerText =
-    'Rate the code complexity of the added lines for each file based on how difficult they are to read, ' +
+    'Rate the Code Complexity of the added lines for each file based on how difficult they are to read, ' +
     'understand, and maintain.\n' +
     'Consider factors such as readability, logic flow, modularity, naming conventions, error handling, and maintainability.' +
     '\nFor files which do not contain any code (e.g comments) you can leave the rating at "No Rating".';

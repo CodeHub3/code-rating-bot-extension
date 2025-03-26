@@ -158,7 +158,10 @@ const Popup = () => {
                 <button
                   type="button"
                   className="back-button"
-                  onClick={() => setUpdatingEmail(false)}
+                  onClick={() => {
+                    setUpdatingEmail(false);
+                    setError(null);
+                  }}
                 >
                   Back
                 </button>
