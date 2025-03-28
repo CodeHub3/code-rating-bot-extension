@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
 
-export const BASE_URL = 'https://codax.ifi.uzh.ch/api';
+export const BASE_URL = 'http://127.0.0.1:8000/api';
 
 const MESSAGES = {
   NO_USERNAME:

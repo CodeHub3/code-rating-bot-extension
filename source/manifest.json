@@ -21,7 +21,7 @@
 
   "host_permissions": [
     "https://*.github.com/*",
-    "https://codax.ifi.uzh.ch/*"
+    "http://127.0.0.1:8000/*"
   ],
 
   "content_security_policy": {
